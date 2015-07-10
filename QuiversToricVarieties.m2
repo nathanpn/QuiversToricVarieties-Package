@@ -623,8 +623,9 @@ pbDetails#(LLength-1) = ({},gamma);
  d := #rays X;
  A := fromWDivToCl X;      
 --to calculate the nonvanishing cones in the Picard lattice  
- cones := new MutableHashTable;
-     	scan(keys pbDetails, i -> cones#(oldL#(LLength-1-i)) = apply(
+ preImageCones := new MutableHashTable;
+     	scan(keys pbDetails, i -> preImageCones#(
+	 oldL#(LLength-1-i)) = apply(
 	  pbDetails#i#1, s -> (
 	    translation := - sum(s, j -> A_{j});
 	    M0 := matrix table(d, d, (p,q) -> if member(
@@ -638,7 +639,7 @@ pbDetails#(LLength-1) = ({},gamma);
 		M = M|(M0_{i}));
 	  outerNorm := (fourierMotzkin (A*M))#0;
     {translation, outerNorm})));
-  X.cache.preImageCones = new HashTable from pairs cones;
+  X.cache.preImageCones = new HashTable from pairs preImageCones;
   X.cache.preImageCones)
 
 ------------------------------------------------
