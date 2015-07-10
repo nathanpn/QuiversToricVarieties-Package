@@ -51,7 +51,8 @@ export{
      "quiverToResMap",
      "label",
      "forbiddenSets",
-     "toricFanoContractions"
+     "toricFanoContractions",
+     "preImageCones"
       }
 
 
@@ -579,9 +580,7 @@ forbiddenSets (NormalToricVariety) := X -> (
 -- under the Picard lattice maps  
 ------------------------------------------------  
 
-pullbackCones = (nn,L) -> (
- X := smoothFanoToricVariety(nn,L#0);
---the 'maximal' variety
+pullbackCones = (X,nn,L) -> (
  LLength := #L;
  oldL := L;
  pbDetails := new MutableHashTable;
@@ -696,6 +695,7 @@ doHigherSelfExtsVanish (Quiver,ZZ) := (Q,n) -> (
 
 doHigherSelfExtsVanish (Quiver,List) := (Q,K) -> (          
     --input is a quiver and a decreasing list of divisorial contractions
+     X := variety Q;
      L := apply(#Q_0, i -> Q#i.degree);
      d := dim Q.variety;
      T := new MutableHashTable;
@@ -705,7 +705,7 @@ doHigherSelfExtsVanish (Quiver,List) := (Q,K) -> (
 	       l := L#(p#0) - L#(p#1);
 	       if not T#?l then T#l = true;
 	       if not T#?(-l) then T#(-l) = true;));
-     cones := pullbackCones (d,K);                                 
+     cones := pullbackCones (X,d,K);                                 
      not any(keys T, l -> any(keys cones, j -> any(cones#j, C -> (
 		 P := (transpose C#1) * (transpose matrix{l} - C#0);
 		 all( first entries transpose P, i -> i <= 0))))))
@@ -715,6 +715,7 @@ doHigherSelfExtsVanish (Quiver,List) := (Q,K) -> (
 doHigherSelfExtsVanish (Quiver,List,ZZ) := (Q,K,nn) -> (          
 --input is a quiver, a decreasing list of divisorial contractions
 --and the maximal chosen tensor power of the anticanonical bundle
+     X := variety Q;
      L := apply(#Q_0, i -> Q#i.degree);
      d := dim Q.variety;
      w := anticanDiv Q.variety;  
@@ -728,7 +729,7 @@ doHigherSelfExtsVanish (Quiver,List,ZZ) := (Q,K,nn) -> (
 --bundles 
 	       if not T#?(l +(i*w)) then T#(l +(i*w)) = true;
 	       if not T#?(-l +(i*w)) then T#(-l +(i*w)) = true;))));
-     cones := pullbackCones (d,K);                                 
+     cones := pullbackCones (X,d,K);                                 
      not any(keys T, l -> any(keys cones, j -> any(cones#j, C -> (
 		 P := (transpose C#1) * (transpose matrix{l} - C#0);
 		 all( first entries transpose P, i -> i <= 0))))))
@@ -1091,7 +1092,7 @@ document {
   SeeAlso => {quiver}
   }              
 
-undocumented {(net,Quiver),(net,QuiverArrow)}
+undocumented {(net,Quiver),(net,QuiverArrow),(preImageCones)}
 ----------------------------------------------------------------------
 -- Lattice Maps induced By T-Invariant Maximal Birational Contractions
 ----------------------------------------------------------------------
